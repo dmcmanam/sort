@@ -110,6 +110,16 @@ func quickSort(data Interface, lo int, hi int) {
 	quickSort(data, d+1, hi)
 }
 
+// IsSorted reports whether data is sorted.
+func IsSorted(data Interface) bool {
+	n := data.Len()
+	for i := n - 1; i > 0; i-- {
+		if data.Less(i, i-1) {
+			return false
+		}
+	}
+	return true
+}
 
 // Convenience types for common cases
 
