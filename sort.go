@@ -1,7 +1,7 @@
 package sort
 
 const (
-	insertionSortThreshold = 35
+	insertionSortThreshold = 16
 )
 
 // A type, typically a collection, that satisfies sort.Interface can be
@@ -32,7 +32,7 @@ func insertionSort(data Interface, a, b int) {
 
 func quickSort(data Interface, lo int, hi int) {
 	if hi-lo < insertionSortThreshold {
-		if hi-lo > 1 {
+		if hi-lo > 0 {
 			insertionSort(data, lo, hi)
 		}
 		return
