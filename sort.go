@@ -19,11 +19,11 @@ type Interface interface {
 
 func Sort(data Interface) {
 	n := data.Len()
-	quickSort(data, 0, n)
+	quickSort(data, 0, n-1)
 }
 
 func insertionSort(data Interface, a, b int) {
-	for i := a + 1; i < b; i++ {
+	for i := a + 1; i <= b; i++ {
 		for j := i; j > a && data.Less(j, j-1); j-- {
 			data.Swap(j, j-1)
 		}
@@ -31,15 +31,14 @@ func insertionSort(data Interface, a, b int) {
 }
 
 func quickSort(data Interface, lo int, hi int) {
-	n := data.Len()
-	if n < insertionSortThreshold {
-		if n > 1 {
+	if hi-lo < insertionSortThreshold {
+		if hi-lo > 1 {
 			insertionSort(data, lo, hi)
 		}
 		return
 	}
 
-	midpoint := (lo + hi) / 2 // TOFIX: potential overflow
+	midpoint := int(uint(lo+hi) >> 1) // Written like this to avoid integer overflow.
 	// insertion sort lo, mid, hi elements
 	if data.Less(midpoint, lo) {
 		data.Swap(midpoint, lo)
