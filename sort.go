@@ -31,9 +31,9 @@ func insertionSort(data Interface, a, b int) {
 }
 
 func quickSort(data Interface, lo int, hi int) {
-	length := hi - lo + 1
-	if length < insertionSortThreshold {
-		if length > 1 {
+	n := data.Len()
+	if n < insertionSortThreshold {
+		if n > 1 {
 			insertionSort(data, lo, hi)
 		}
 		return
