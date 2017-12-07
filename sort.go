@@ -1,8 +1,8 @@
 package sort
 
-import "reflect"
-
-const insertionSortThreshold = 35
+const (
+	insertionSortThreshold = 35
+)
 
 // A type, typically a collection, that satisfies sort.Interface can be
 // sorted by the routines in this package. The methods require that the
@@ -80,27 +80,36 @@ func quickSort(data Interface, lo int, hi int) {
 		if b <= c {
 			if data.Less(hi, b) {
 				if data.Less(c, lo) {
-					data.Swap(b, a); data.Swap(a, c)
+					data.Swap(b, a)
+					data.Swap(a, c)
 					a++
 				} else {
 					data.Swap(b, c)
 				}
 				data.Swap(c, d)
-				b++; c--; d--
+				b++
+				c--
+				d--
 			} else {
 				if data.Less(c, lo) {
-					data.Swap(b, a); data.Swap(a, c)
+					data.Swap(b, a)
+					data.Swap(a, c)
 					a++
 				} else {
 					data.Swap(b, c)
 				}
-				b++; c--
+				b++
+				c--
 			}
 		}
 	}
 
-	a--; b--; c++; d++;
-	data.Swap(lo+1, a); data.Swap(a, b)
+	a--
+	b--
+	c++
+	d++
+	data.Swap(lo+1, a)
+	data.Swap(a, b)
 
 	a--
 	data.Swap(lo, a)
@@ -110,20 +119,6 @@ func quickSort(data Interface, lo int, hi int) {
 	quickSort(data, a+1, b)
 	quickSort(data, c, d-1)
 	quickSort(data, d+1, hi)
-}
-
-// SliceIsSorted tests whether a slice is sorted.
-//
-// The function panics if the provided interface is not a slice.
-func SliceIsSorted(slice interface{}, less func(i, j int) bool) bool {
-	rv := reflect.ValueOf(slice)
-	n := rv.Len()
-	for i := n - 1; i > 0; i-- {
-		if less(i, i-1) {
-			return false
-		}
-	}
-	return true
 }
 
 // IsSorted reports whether data is sorted.
