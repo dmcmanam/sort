@@ -1,5 +1,7 @@
 package sort
 
+import "fmt"
+
 const (
 	insertionSortThreshold = 35
 )
@@ -19,6 +21,7 @@ type Interface interface {
 
 func Sort(data Interface) {
 	n := data.Len()
+	fmt.Println("sorting")
 	quickSort(data, 0, n)
 }
 

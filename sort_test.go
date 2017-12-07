@@ -2,18 +2,15 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package sort_test
+package sort
 
 import (
-"flag"
-"fmt"
-"math"
-"math/rand"
-"sort"
-"strconv"
-"testing"
-
-. "github.com/dmcmanam/sort"
+	"flag"
+	"fmt"
+	"math"
+	"math/rand"
+	"strconv"
+	"testing"
 )
 
 var skipAdversial = flag.Bool("skip-adversial", false, "skip adversial tests")
@@ -24,9 +21,9 @@ var strings = [...]string{"", "Hello", "foo", "bar", "foo", "f00", "%*&^*&^&", "
 
 func TestSortIntSlice(t *testing.T) {
 	data := ints
-	a := sort.IntSlice(data[0:])
+	a := IntSlice(data[0:])
 	Sort(a)
-	if !sort.IsSorted(a) {
+	if !IsSorted(a) {
 		t.Errorf("sorted %v", ints)
 		t.Errorf("   got %v", data)
 	}
@@ -34,9 +31,9 @@ func TestSortIntSlice(t *testing.T) {
 
 func TestSortFloat64Slice(t *testing.T) {
 	data := float64s
-	a := sort.Float64Slice(data[0:])
+	a := Float64Slice(data[0:])
 	Sort(a)
-	if !sort.IsSorted(a) {
+	if !IsSorted(a) {
 		t.Errorf("sorted %v", float64s)
 		t.Errorf("   got %v", data)
 	}
@@ -44,9 +41,9 @@ func TestSortFloat64Slice(t *testing.T) {
 
 func TestSortStringSlice(t *testing.T) {
 	data := strings
-	a := sort.StringSlice(data[0:])
+	a := StringSlice(data[0:])
 	Sort(a)
-	if !sort.IsSorted(a) {
+	if !IsSorted(a) {
 		t.Errorf("sorted %v", strings)
 		t.Errorf("   got %v", data)
 	}
@@ -72,7 +69,7 @@ func (t *nonDeterministicTestingData) Swap(i, j int) {
 }
 
 func TestNonDeterministicComparison(t *testing.T) {
-	// Ensure that sort.Sort does not panic when Less returns inconsistent results.
+	// Ensure that Sort does not panic when Less returns inconsistent results.
 	// See https://golang.org/issue/14377.
 	defer func() {
 		if r := recover(); r != nil {
@@ -100,7 +97,7 @@ func BenchmarkSortString1K(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		copy(data, unsorted)
 		b.StartTimer()
-		Sort(sort.StringSlice(data))
+		Sort(StringSlice(data))
 		b.StopTimer()
 	}
 }
@@ -113,7 +110,7 @@ func BenchmarkSortInt1K(b *testing.B) {
 			data[i] = i ^ 0x2cc
 		}
 		b.StartTimer()
-		Sort(sort.IntSlice(data))
+		Sort(IntSlice(data))
 		b.StopTimer()
 	}
 }
@@ -126,7 +123,7 @@ func BenchmarkSortInt64K(b *testing.B) {
 			data[i] = i ^ 0xcccc
 		}
 		b.StartTimer()
-		Sort(sort.IntSlice(data))
+		Sort(IntSlice(data))
 		b.StopTimer()
 	}
 }
@@ -187,7 +184,7 @@ func lg(n int) int {
 	return i
 }
 
-func testBentleyMcIlroy(t *testing.T, sortfn func(sort.Interface), maxswap func(int) int) {
+func testBentleyMcIlroy(t *testing.T, sortfn func(Interface), maxswap func(int) int) {
 	if *skipAdversial {
 		t.Skip()
 		return
@@ -257,7 +254,7 @@ func testBentleyMcIlroy(t *testing.T, sortfn func(sort.Interface), maxswap func(
 						}
 						// Ints is known to be correct
 						// because mode Sort runs after mode _Copy.
-						Sort(sort.IntSlice(mdata))
+						Sort(IntSlice(mdata))
 					case _Dither:
 						for i := 0; i < n; i++ {
 							mdata[i] = data[i] + i%5
@@ -278,7 +275,7 @@ func testBentleyMcIlroy(t *testing.T, sortfn func(sort.Interface), maxswap func(
 					// In go, we don't have to be so paranoid: since the only
 					// mutating method Sort can call is TestingData.swap,
 					// it suffices here just to check that the final slice is sorted.
-					if !sort.IntsAreSorted(mdata) {
+					if !IntsAreSorted(mdata) {
 						t.Errorf("%s: ints not sorted", desc)
 						t.Errorf("\t%v", mdata)
 						t.FailNow()
@@ -291,10 +288,6 @@ func testBentleyMcIlroy(t *testing.T, sortfn func(sort.Interface), maxswap func(
 
 func TestSortBM(t *testing.T) {
 	testBentleyMcIlroy(t, Sort, func(n int) int { return n * lg(n) * 12 / 10 })
-}
-
-func TestSortBasicBM(t *testing.T) {
-	testBentleyMcIlroy(t, SortBasic, func(n int) int { return n * lg(n) * lg(n) / 3 })
 }
 
 // This is based on the "antiquicksort" implementation by M. Douglas McIlroy.
@@ -370,14 +363,6 @@ func TestAdversary(t *testing.T) {
 	}
 }
 
-func TestSortBasicInts(t *testing.T) {
-	data := ints
-	SortBasic(sort.IntSlice(data[0:]))
-	if !sort.IntsAreSorted(data[0:]) {
-		t.Errorf("nsorted %v\n   got %v", ints, data)
-	}
-}
-
 type intPairs []struct {
 	a, b int
 }
@@ -413,7 +398,7 @@ func (d intPairs) inOrder() bool {
 
 var countOpsSizes = []int{1e2, 3e2, 1e3, 3e3, 1e4, 3e4, 1e5, 3e5, 1e6}
 
-func countOps(t *testing.T, algo func(sort.Interface), name string) {
+func countOps(t *testing.T, algo func(Interface), name string) {
 	sizes := countOpsSizes
 	if testing.Short() {
 		sizes = sizes[:5]
@@ -436,10 +421,9 @@ func countOps(t *testing.T, algo func(sort.Interface), name string) {
 	}
 }
 
-func TestCountSortOps(t *testing.T)      { countOps(t, Sort, "Sort  ") }
-func TestCountSortBasicOps(t *testing.T) { countOps(t, SortBasic, "SortBasic") }
+func TestCountSortOps(t *testing.T) { countOps(t, Sort, "Sort  ") }
 
-func bench(b *testing.B, size int, algo func(sort.Interface), name string) {
+func bench(b *testing.B, size int, algo func(Interface), name string) {
 	b.StopTimer()
 	data := make(intPairs, size)
 	x := ^uint32(0)
@@ -457,7 +441,7 @@ func bench(b *testing.B, size int, algo func(sort.Interface), name string) {
 			b.StartTimer()
 			algo(data)
 			b.StopTimer()
-			if !sort.IsSorted(data) {
+			if !IsSorted(data) {
 				b.Errorf("%s did not sort %d ints", name, n)
 			}
 		}
@@ -467,7 +451,3 @@ func bench(b *testing.B, size int, algo func(sort.Interface), name string) {
 func BenchmarkSort1e2(b *testing.B) { bench(b, 1e2, Sort, "Sort") }
 func BenchmarkSort1e4(b *testing.B) { bench(b, 1e4, Sort, "Sort") }
 func BenchmarkSort1e6(b *testing.B) { bench(b, 1e6, Sort, "Sort") }
-
-func BenchmarkBasic1e2(b *testing.B) { bench(b, 1e2, SortBasic, "SortBasic") }
-func BenchmarkBasic1e4(b *testing.B) { bench(b, 1e4, SortBasic, "SortBasic") }
-func BenchmarkBasic1e6(b *testing.B) { bench(b, 1e6, SortBasic, "SortBasic") }
