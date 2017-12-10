@@ -115,8 +115,8 @@ func quickSort(data Interface, lo int, hi int) {
 	data.Swap(hi, d)
 
 	quickSort(data, lo, a-1)
-	quickSort(data, a+1, b)
-	quickSort(data, c, d-1)
+	quickSort(data, a+1, b-1)
+	quickSort(data, b+1, d-1)
 	quickSort(data, d+1, hi)
 }
 
