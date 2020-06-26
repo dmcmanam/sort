@@ -17,6 +17,7 @@ var skipAdversial = flag.Bool("skip-adversial", false, "skip adversial tests")
 
 var ints = [...]int{74, 59, 238, -784, 9845, 959, 905, 0, 0, 42, 7586, -5467984, 7586}
 var float64s = [...]float64{74.3, 59.0, math.Inf(1), 238.2, -784.0, 2.3, math.NaN(), math.NaN(), math.Inf(-1), 9845.768, -959.7485, 905, 7.8, 7.8}
+var float32s = [...]float32{74.3, 59.0, 238.2, -784.0, 2.3, 45.768, -959.74, 905, 7.8, 7.8}
 var strings = [...]string{"", "Hello", "foo", "bar", "foo", "f00", "%*&^*&^&", "***"}
 
 func TestSortIntSlice(t *testing.T) {
@@ -37,6 +38,18 @@ func TestSortFloat64Slice(t *testing.T) {
 		t.Errorf("sorted %v", float64s)
 		t.Errorf("   got %v", data)
 	}
+
+}
+func TestSortFloat32Slice(t *testing.T) {
+	data := float32s
+	a := Float32Slice(data[0:])
+	Sort(a)
+	if !IsSorted(a) {
+		t.Errorf("sorted %v", float32s)
+		t.Errorf("   got %v", data)
+	}
+	t.Log("Original 	: ", data)
+	t.Log("Sorted: ", a)
 }
 
 func TestSortStringSlice(t *testing.T) {
