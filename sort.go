@@ -155,9 +155,24 @@ func (p Float64Slice) Swap(i, j int)      { p[i], p[j] = p[j], p[i] }
 func isNaN(f float64) bool {
 	return f != f
 }
+// isNaN is a copy of math.IsNaN to avoid a dependency on the math package.
+func isNaN32(f float32) bool {
+	return f != f
+}
 
 // Sort is a convenience method.
 func (p Float64Slice) Sort() { Sort(p) }
+
+// Float32Slice attaches the methods of Interface to []float32, sorting in increasing order
+// (not-a-number values are treated as less than other values).
+type Float32Slice []float32
+
+func (p Float32Slice) Len() int           { return len(p) }
+func (p Float32Slice) Less(i, j int) bool { return p[i] < p[j] || isNaN32(p[i]) && !isNaN32(p[j]) }
+func (p Float32Slice) Swap(i, j int)      { p[i], p[j] = p[j], p[i] }
+
+// Sort is a convenience method.
+func (p Float32Slice) Sort() { Sort(p) }
 
 // StringSlice attaches the methods of Interface to []string, sorting in increasing order.
 type StringSlice []string
@@ -178,6 +193,10 @@ func Ints(a []int) { Sort(IntSlice(a)) }
 // (not-a-number values are treated as less than other values).
 func Float64s(a []float64) { Sort(Float64Slice(a)) }
 
+// Float32s sorts a slice of float64s in increasing order
+// (not-a-number values are treated as less than other values).
+func Float32s(a []float32) { Sort(Float32Slice(a)) }
+
 // Strings sorts a slice of strings in increasing order.
 func Strings(a []string) { Sort(StringSlice(a)) }
 
@@ -187,6 +206,10 @@ func IntsAreSorted(a []int) bool { return IsSorted(IntSlice(a)) }
 // Float64sAreSorted tests whether a slice of float64s is sorted in increasing order
 // (not-a-number values are treated as less than other values).
 func Float64sAreSorted(a []float64) bool { return IsSorted(Float64Slice(a)) }
+
+// Float32sAreSorted tests whether a slice of float64s is sorted in increasing order
+// (not-a-number values are treated as less than other values).
+func Float32sAreSorted(a []float32) bool { return IsSorted(Float32Slice(a)) }
 
 // StringsAreSorted tests whether a slice of strings is sorted in increasing order.
 func StringsAreSorted(a []string) bool { return IsSorted(StringSlice(a)) }
